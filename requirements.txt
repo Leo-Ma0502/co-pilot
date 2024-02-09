@@ -1,6 +1,6 @@
-scipy==1.6.3
+scipy==1.5.4
 filterpy==1.4.5
-pygame==2.0.1
+pygame==2.0.2.dev4
 pytest==6.2.3
 PyYAML==5.4.1
 transitions==0.8.10
