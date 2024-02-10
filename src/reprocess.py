@@ -65,7 +65,7 @@ def reprocess(args):
             camera_info,
             inference_config,
             ILed(),
-            # Speaker(args.lang),
+            Speaker(args.lang),
             make_interpreter(args.ssd_model),
             make_interpreter(args.traffic_light_classification_model),
         )
