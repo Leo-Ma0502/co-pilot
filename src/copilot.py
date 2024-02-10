@@ -33,7 +33,7 @@ class CoPilot(object):
         camera_info,
         inference_config,
         led,
-        speaker,
+        # speaker,
         ssd_interpreter,
         traffic_light_classifier_interpreter,
     ):
@@ -58,7 +58,7 @@ class CoPilot(object):
         self._classfication_interpreter.allocate_tensors()
         self._traffic_light_size = common.input_size(self._classfication_interpreter)
 
-        self._speaker = speaker
+        # self._speaker = speaker
 
         input_shape = self._ssd_interpreter.get_input_details()[0]["shape"]
         tile_w_overlap, tile_h_overlap = self._inference_config.tile_overlap
@@ -81,7 +81,7 @@ class CoPilot(object):
         self._traffic_light_infer_time_ms = 0
         # button_pin = 8
         # button = Button(button_pin)
-        self._speaker.play_ready(args.mode)
+        # self._speaker.play_ready(args.mode)
         logging.info("Starting jounery on {}".format(time.strftime("%Y%m%d-%H%M%S")))
 
     def stop(self):
@@ -123,7 +123,7 @@ class CoPilot(object):
         )
 
         sound = self._traffic_light_state.update(traffic_light_cls)
-        self._speaker.play(sound)
+        # self._speaker.play(sound)
 
         self._blackbox.log(image, traffic_lights, objects_by_label, self._tracker)
 
