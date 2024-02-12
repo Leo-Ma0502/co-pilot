@@ -1,7 +1,6 @@
 ARG UBUNTU_VERSION=18.04
 
 FROM ubuntu:${UBUNTU_VERSION} AS base
-MAINTAINER Qian Qian (xeonqq@gmail.com)
 ENV LANG C.UTF-8
 
 RUN apt-get update && apt-get install -y \
