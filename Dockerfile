@@ -40,7 +40,7 @@ RUN echo "deb https://packages.cloud.google.com/apt coral-edgetpu-stable main" |
 RUN curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
 RUN apt-get update
 RUN apt-get install -y libedgetpu1-std
-RUN apt-get install -y python3-pycoral
+# RUN apt-get install -y python3-pycoral
 RUN apt-get install -y python3-tflite-runtime
 RUN python3 -m pip install --upgrade --extra-index-url https://google-coral.github.io/py-repo/ pycoral
 

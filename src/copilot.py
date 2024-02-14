@@ -115,6 +115,7 @@ class CoPilot(object):
         self._led_on_given(objects_by_label, "traffic light")
 
         traffic_lights = self.classify_traffic_lights(image, objects_by_label)
+        print("----------> Finished classification")
 
         self._tracker.track(traffic_lights)
         relevant_traffic_light_track = self._tracker.get_driving_relevant_track()
