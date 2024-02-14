@@ -13,7 +13,7 @@ from .camera_info import CameraInfo
 from .whitebox import WhiteBox
 from .image_saver import AsyncImageSaver
 from .abc import ILed
-from .speaker import Speaker
+# from .speaker import Speaker
 
 
 def get_image_gen(args, inference_config):
@@ -65,7 +65,7 @@ def reprocess(args):
             camera_info,
             inference_config,
             ILed(),
-            Speaker(args.lang),
+            # Speaker(args.lang),
             make_interpreter(args.ssd_model),
             make_interpreter(args.traffic_light_classification_model),
         )
@@ -82,6 +82,12 @@ def reprocess(args):
 
 def parse_arguments():
     parser = argparse.ArgumentParser()
+
+    parser.add_argument(
+        "--mode",
+        help="select 'full' (full alert mode) or 'minimal' (yellow alert)",
+        default='minimal'
+    )
 
     parser.add_argument(
         "--lang",
