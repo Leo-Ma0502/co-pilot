@@ -1,4 +1,4 @@
 -r requirements.txt
 picamera==1.13
-RPi.GPIO==0.7.0
-opencv-contrib-python-headless==4.4.0.46
+RPi.GPIO==0.7.1
+opencv-contrib-python-headless==4.9.0.80
