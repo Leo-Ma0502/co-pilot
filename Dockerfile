@@ -1,6 +1,10 @@
 ARG UBUNTU_VERSION=18.04
 
 FROM ubuntu:${UBUNTU_VERSION} AS base
+
+# Install Xvfb
+RUN apt-get update && apt-get install -y xvfb
+
 ENV LANG C.UTF-8
 
 RUN apt-get update && apt-get install -y \
@@ -38,6 +42,7 @@ RUN apt-get update
 RUN apt-get install -y libedgetpu1-std
 RUN apt-get install -y python3-pycoral
 RUN apt-get install -y python3-tflite-runtime
+RUN python3 -m pip install --upgrade --extra-index-url https://google-coral.github.io/py-repo/ pycoral
 
 ADD requirements.txt /tmp/requirements.txt
 RUN python3 -m pip install --no-cache-dir -r /tmp/requirements.txt
