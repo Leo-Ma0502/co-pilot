@@ -116,7 +116,7 @@ class CoPilot(object):
 
         traffic_lights = self.classify_traffic_lights(image, objects_by_label)
         print("----------> Finished classification")
-        print("......... traffic lights: ", traffic_lights)
+        print("----------> traffic lights: ", traffic_lights)
 
         self._tracker.track(traffic_lights)
         relevant_traffic_light_track = self._tracker.get_driving_relevant_track()
@@ -135,6 +135,8 @@ class CoPilot(object):
         traffic_lights = []
         for obj_image, detection in zip(object_images, detected_traffic_lights):
             c, score = self.classify(obj_image)
+            print("....................... classification: ", c)
+            print("....................... score: ", score)
             traffic_lights.append(TrafficLight(c, score, detection, obj_image))
             # if c:
             #    self._speaker.play(c)
