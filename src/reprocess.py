@@ -46,7 +46,7 @@ def get_image_gen(args, inference_config):
 
 
 def reprocess(args):
-    print("=== start reprocessing ===")
+    # print("=== start reprocessing ===")
     if args.cpu:
         from tflite_runtime.interpreter import Interpreter as make_interpreter
     else:
@@ -75,7 +75,7 @@ def reprocess(args):
         return
 
     for image in get_image_gen(args, inference_config):
-        print("=== processing images ===")
+        # print("=== processing images ===")
         copilot.process(image)
         # if args.real_time:
         #    time.sleep(0.05)
