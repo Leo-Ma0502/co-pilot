@@ -1,3 +1,4 @@
 **/detection/
 **/*.log
 **/__pycache__/
+**/test_videos/
