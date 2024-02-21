@@ -7,6 +7,8 @@ from pycoral.adapters import common
 from pycoral.adapters import detect
 from pycoral.adapters import classify
 from pycoral.utils.dataset import read_label_file
+from .beep import play_sound
+from .state import VariableMonitor
 
 # from .button import Button
 from .utils import (
@@ -84,6 +86,9 @@ class CoPilot(object):
         # self._speaker.play_ready(args.mode)
         logging.info("Starting jounery on {}".format(time.strftime("%Y%m%d-%H%M%S")))
 
+        self.monitor = VariableMonitor(initial_value="none")
+        self.monitor.set_callback(play_sound)
+
     def stop(self):
         self._blackbox.stop_and_join()
 
@@ -110,23 +115,25 @@ class CoPilot(object):
             self._led.off()
 
     def process(self, image):
-
         objects_by_label = self.detect(image)
         self._led_on_given(objects_by_label, "traffic light")
 
-        print("===============================")
+        # print("===============================")
         traffic_lights = self.classify_traffic_lights(image, objects_by_label)
-        print("----------> Finished classification")
-        print("----------> traffic lights: ", [i.cls for i in traffic_lights])
+        # print("----------> Finished classification")
+        # print("----------> traffic lights: ", [i.cls for i in traffic_lights])
 
         self._tracker.track(traffic_lights)
         relevant_traffic_light_track = self._tracker.get_driving_relevant_track()
         traffic_light_cls = (
             relevant_traffic_light_track.cls if relevant_traffic_light_track else None
         )
+        # print("----------> traffic light cls: ", traffic_light_cls)
+        self.monitor.value = traffic_light_cls
 
+        # play_sound(traffic_light_cls)
         sound = self._traffic_light_state.update(traffic_light_cls)
-        (print("----------> sound to play: ", sound) if str(sound) != "None" else print("no sound to play"))
+        # (print("----------> sound to play: ", sound) if str(sound) != "None" else print("no sound to play"))
         
         # print("===============================")
         # self._speaker.play(sound)

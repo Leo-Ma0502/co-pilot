@@ -13,6 +13,7 @@ from .camera_info import CameraInfo
 from .whitebox import WhiteBox
 from .image_saver import AsyncImageSaver
 from .abc import ILed
+from .beep import play_sound
 # from .speaker import Speaker
 
 
