@@ -17,9 +17,9 @@ class WhiteBox(object):
             self._image_saver.save_image_and_traffic_lights(image, traffic_lights)
         imcv = cv2.cvtColor(np.asarray(image), cv2.COLOR_RGB2BGR)
 
-        cv2.imshow("display", imcv)
+        # cv2.imshow("display", imcv)
         ms = 0 if self._enable_step else 200
-        cv2.waitKey(ms)
+        # cv2.waitKey(ms)
 
     def stop_and_join(self):
         self._image_saver.stop_and_join()

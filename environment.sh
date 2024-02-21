@@ -2,7 +2,10 @@ echo "deb https://packages.cloud.google.com/apt coral-edgetpu-stable main" | sud
 sudo curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
 sudo apt-get update
 sudo apt install -y python3-opencv
+sudo apt-get update 
+sudo apt-get install -y xvfb
 sudo apt-get install -y libedgetpu1-std
+python3 -m pip install --no-cache-dir matplotlib videoio 
 # sudo apt-get install -y python3-pycoral
 # sudo apt-get install -y python3-tflite-runtime
 # sudo python3 -m
