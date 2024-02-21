@@ -1,4 +1,5 @@
-python3 -m pip install --upgrade --extra-index-url https://google-coral.github.io/py-repo/ pycoral
+# if in docker env
+# python3 -m pip install --upgrade --extra-index-url https://google-coral.github.io/py-repo/ pycoral
 xvfb-run -s "-screen 0 640x480x16" python3\
  -m src.reprocess\
   --ssd_model models/ssd_mobilenet_v2_coco_quant_no_nms_edgetpu.tflite \
