@@ -19,7 +19,7 @@ def play_sound(new_color, previous_color):
     Returns:
         None
     """
-    print(f"Variable changed from {previous_color} to {new_color}")
+    print(f"Traffic light changed from {previous_color} to {new_color}")
     file_path = get_path(new_color)
     try:
         if(file_path!="invalid color"):
@@ -40,7 +40,7 @@ def get_path(color):
     Returns:
         path (str)
     """
-    
+
     if "red" in color:
         return "./sounds/mario/smb_pause.wav"
     elif "yellow" in color:
