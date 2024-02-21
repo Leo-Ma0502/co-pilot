@@ -40,13 +40,14 @@ def get_path(color):
     Returns:
         path (str)
     """
-
-    if "red" in color:
-        return "./sounds/mario/smb_pause.wav"
-    elif "yellow" in color:
-        return "./sounds/mario/nsmb_pipe.wav"
-    elif "green" in color:
-        return "./sounds/mario/smb_1-up.wav"
-    else:
+    if isinstance(color, str):
+        if "red" in color:
+            return "./sounds/mario/smb_pause.wav"
+        elif "yellow" in color:
+            return "./sounds/mario/nsmb_pipe.wav"
+        elif "green" in color:
+            return "./sounds/mario/smb_1-up.wav"
+        else:
+            return "invalid color"
+    else: 
         return "invalid color"
-
