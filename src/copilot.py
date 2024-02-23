@@ -118,9 +118,9 @@ class CoPilot(object):
         objects_by_label = self.detect(image)
         self._led_on_given(objects_by_label, "traffic light")
 
-        # print("===============================")
+        print("===============================")
         traffic_lights = self.classify_traffic_lights(image, objects_by_label)
-        # print("----------> Finished classification")
+        print("----------> Finished classification")
         # print("----------> traffic lights: ", [i.cls for i in traffic_lights])
 
         self._tracker.track(traffic_lights)
@@ -135,7 +135,7 @@ class CoPilot(object):
         sound = self._traffic_light_state.update(traffic_light_cls)
         # (print("----------> sound to play: ", sound) if str(sound) != "None" else print("no sound to play"))
         
-        # print("===============================")
+        print("===============================")
         # self._speaker.play(sound)
 
         self._blackbox.log(image, traffic_lights, objects_by_label, self._tracker)

@@ -3,3 +3,4 @@
 **/__pycache__/
 **/test_videos/
 **/captured_images/
+**/*.h264
