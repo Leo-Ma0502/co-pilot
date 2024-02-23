@@ -14,6 +14,7 @@ from .whitebox import WhiteBox
 from .image_saver import AsyncImageSaver
 from .abc import ILed
 from .beep import play_sound
+from .beep import init_sound
 # from .speaker import Speaker
 
 import cv2
@@ -21,6 +22,7 @@ import os
 import subprocess
 import numpy as np
 import datetime
+import shutil
 
 
 
@@ -52,6 +54,9 @@ def reprocess(args):
 
     images_folder = "captured_images"
     if not os.path.exists(images_folder):
+        os.makedirs(images_folder)
+    else:
+        shutil.rmtree(images_folder)
         os.makedirs(images_folder)
 
     fifo_path = 'video.h264'
@@ -230,6 +235,7 @@ def parse_arguments():
 
 
 def main():
+    init_sound()
     args = parse_arguments()
     args.blackbox_path = pathlib.Path(args.blackbox_path).joinpath(
         time.strftime("%Y%m%d-%H%M%S")

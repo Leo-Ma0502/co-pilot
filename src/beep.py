@@ -8,6 +8,12 @@
 
 import subprocess
 
+def init_sound():
+    try:
+        subprocess.check_call(['paplay', "./sounds/mario/smb_coin.wav"])
+    except subprocess.CalledProcessError as e:
+        print(f"Error: {e}")
+
 def play_sound(new_color, previous_color):
     """
     Play a sound file using the `paplay` command.
