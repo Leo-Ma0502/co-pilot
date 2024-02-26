@@ -1,5 +1,6 @@
 import logging
 import time
+import datetime
 
 from PIL import Image
 
@@ -120,7 +121,8 @@ class CoPilot(object):
 
         print("===============================")
         traffic_lights = self.classify_traffic_lights(image, objects_by_label)
-        print("----------> Finished classification")
+        current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        print(f"----------> Finished classification at {current_time}")
         # print("----------> traffic lights: ", [i.cls for i in traffic_lights])
 
         self._tracker.track(traffic_lights)

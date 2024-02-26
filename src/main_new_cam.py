@@ -62,7 +62,7 @@ def reprocess(args):
     fifo_path = 'video.h264'
 
     recreate_fifo_file(fifo_path)
-    cmd = ['sudo', 'libcamera-vid', '-o', fifo_path, '--inline', '--width', '1920', '--height', '1080', '-t', '0']
+    cmd = ['libcamera-vid', '-o', fifo_path, '--inline', '--width', '1920', '--height', '1080', '-t', '0']
     proc = subprocess.Popen(cmd)
 
 
@@ -72,6 +72,9 @@ def reprocess(args):
     count = 0
     data_read = 0
     start_point = 0
+
+    subprocess.run(['sudo', 'rm', '*.h264'])
+    print(f"cleared cache at {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
     try:
         copilot = CoPilot(
@@ -90,6 +93,10 @@ def reprocess(args):
         return
 
     while True:
+        # saved = os.listdir(images_folder)
+        # if(len(saved>100)):
+        #     os.unlink(saved[-1])
+        #     print(f"cleared cache at {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         try:
             os.lseek(fifo_fd, start_point, os.SEEK_SET)
             print(f"---\n data read: {data_read}; start: {start_point} \n---")
@@ -123,7 +130,14 @@ def reprocess(args):
                 copilot.process(file)
             else:
                  print(f"file not found")
+
             count += 1
+
+            # if(count>50):
+            #     shutil.rmtree(images_folder)
+            #     os.makedirs(images_folder)
+            #     print(f"cleared cache at {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+            #     count = 0
 
         
         except ValueError as e:
@@ -139,6 +153,8 @@ def reprocess(args):
             os.remove(fifo_path)
             break
     copilot.stop()
+    subprocess.run(['sudo', 'rm', '*.h264'])
+    print(f"cleared cache at {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
        
 
 def parse_arguments():

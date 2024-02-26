@@ -7,12 +7,16 @@
 
 
 import subprocess
+# import os
+
+# curr_path = os.getcwd()
 
 def init_sound():
     try:
-        subprocess.check_call(['sudo', '-u', 'watchtower', 'paplay', "./sounds/mario/smb_coin.wav"])
+        subprocess.check_call(['paplay', "./sounds/mario/smb_coin.wav"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     except subprocess.CalledProcessError as e:
-        print(f"Error: {e}")
+        print(f"Error: {e}\nOutput: {e.output}")
+
 
 def play_sound(new_color, previous_color):
     """
@@ -29,7 +33,7 @@ def play_sound(new_color, previous_color):
     file_path = get_path(new_color)
     try:
         if(file_path!="invalid color"):
-            subprocess.check_call(['sudo', '-u', 'watchtower', 'paplay', file_path])
+            subprocess.check_call(['paplay', file_path])
         else:
             print("invalid color")
     except subprocess.CalledProcessError as e:
