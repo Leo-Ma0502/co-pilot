@@ -16,6 +16,9 @@ from .abc import ILed
 from .beep import play_sound
 # from .speaker import Speaker
 
+import queue
+import threading
+
 
 def get_image_gen(args, inference_config):
     if args.video:
@@ -42,6 +45,27 @@ def get_image_gen(args, inference_config):
             box = (0, 0, image.size[0], min(image.size[0] * inference_h / inference_w, image.size[1]))
             image = image.resize(inference_config.inference_resolution, box=box)
             yield image
+
+    # if args.queue:
+    #     while True:
+    #         image_path = image_queue.get()
+    #         if image_path is None:
+    #             break
+            
+    #         print(f"Processing {image_path}")
+    #         try:
+    #             image = Image.open(image_path, "r").convert("RGB")
+    #             inference_w, inference_h = inference_config.inference_resolution
+    #             box = (0, 0, image.size[0], min(image.size[0] * inference_h / inference_w, image.size[1]))
+    #             image = image.resize(inference_config.inference_resolution, box=box)
+    #             yield image
+    #         except Exception as e:
+    #             print(f"Error processing image {image_path}: {e}")
+            
+    #         os.remove(image_path)  
+            
+    #         image_queue.task_done()  
+
     else:
         assert "must provide --video or --images"
 
@@ -152,6 +176,11 @@ def parse_arguments():
         "--images",
         help="path to the folder of images to be reprocessed",
     )
+
+    # parser.add_argument(
+    #     "--queue",
+    #     help="get image from queue",
+    # )
 
     parser.add_argument(
         "--flip",

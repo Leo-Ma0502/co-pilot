@@ -24,6 +24,9 @@ import numpy as np
 import datetime
 import shutil
 
+import threading
+import queue
+
 
 
 
@@ -39,7 +42,7 @@ def recreate_fifo_file(fifo_path):
     with open(fifo_path, 'wb'):
         pass 
 
-def reprocess(args):
+def get_images(args):
     # print("=== start reprocessing ===")
     if args.cpu:
         from tflite_runtime.interpreter import Interpreter as make_interpreter
@@ -62,7 +65,7 @@ def reprocess(args):
     fifo_path = 'video.h264'
 
     recreate_fifo_file(fifo_path)
-    cmd = ['libcamera-vid', '-o', fifo_path, '--inline', '--width', '1920', '--height', '1080', '-t', '0']
+    cmd = ['libcamera-vid', '-o', fifo_path, '--inline', '--width', '1920', '--height', '1080', '-t', '0', '--rotation', '180']
     proc = subprocess.Popen(cmd)
 
 
@@ -124,21 +127,19 @@ def reprocess(args):
 
             print(f"=============\n Have captured {count} images at {current_time}\n =============")
 
+            # image_queue.put(saved_output) 
+
             if os.path.exists(saved_output):
                 print(f"-----------------\n start processing image \n -----------------")
                 file = Image.open(saved_output)
+                inference_w, inference_h = inference_config.inference_resolution
+                box = (0, 0, file.size[0], min(file.size[0] * inference_h / inference_w, file.size[1]))
+                file = file.resize(inference_config.inference_resolution, box=box)
                 copilot.process(file)
             else:
                  print(f"file not found")
 
             count += 1
-
-            # if(count>50):
-            #     shutil.rmtree(images_folder)
-            #     os.makedirs(images_folder)
-            #     print(f"cleared cache at {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-            #     count = 0
-
         
         except ValueError as e:
             print(str(e))
@@ -153,9 +154,9 @@ def reprocess(args):
             os.remove(fifo_path)
             break
     copilot.stop()
-    subprocess.run(['sudo', 'rm', '*.h264'])
-    print(f"cleared cache at {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
        
+# def get_lights():
+#     subprocess.run(["./reprocess.sh"])
 
 def parse_arguments():
     parser = argparse.ArgumentParser()
@@ -259,7 +260,8 @@ def main():
     args.blackbox_path.mkdir(parents=True, exist_ok=True)
     log_path = args.blackbox_path.joinpath("co-pilot.log")
     logging.basicConfig(filename=str(log_path), level=logging.DEBUG)
-    reprocess(args)
+    # image_queue = queue.Queue()
+    get_images(args)
 
 
 if __name__ == "__main__":

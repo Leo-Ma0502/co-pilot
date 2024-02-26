@@ -12,6 +12,8 @@ python3 -m pip install --no-cache-dir matplotlib videoio
 pip install -r requirements_pi.txt
 sudo apt-get install libsdl2-mixer-2.0-0  libsdl2-2.0-0
 
+sudo apt-get update
+sudo apt-get install inotify-tools
 
 # instal ffmpeg
 cd ~ 

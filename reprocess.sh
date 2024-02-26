@@ -8,5 +8,5 @@ xvfb-run -s "-screen 0 640x480x16" python3\
   --traffic_light_classification_model models/traffic_light_edgetpu.tflite \
   --traffic_light_label models/traffic_light_labels.txt \
   --blackbox_path=./ \
-  --video tests/test_videos/dashcam/MOVI0495.mov \
+  --images captured_images
   --fps 5
