@@ -204,6 +204,10 @@ def get_images(image_queue):
         if cv2.waitKey(1) & 0xFF == ord('q'):
             stop_subprocess(proc_cam) 
             # os.remove(fifo_path)
+            subprocess.run(['sudo', 'umount', mount_point], check=True)
+            subprocess.run(['sudo', 'rm -rf', mount_point], check=True)
+            image_queue.put(None)
+            os.close(fifo_fd)
             break
     os.close(fifo_fd)
     subprocess.run(['sudo', 'umount', mount_point], check=True)
