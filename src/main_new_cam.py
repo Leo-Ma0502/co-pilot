@@ -192,13 +192,13 @@ def get_images(image_queue):
         except ValueError as e:
             print(str(e))
             stop_subprocess(proc) 
-            os.remove(temp_file_path)
+            # os.remove(temp_file_path)
             os.remove(fifo_path)
             break
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             stop_subprocess(proc) 
-            os.remove(temp_file_path)
+            # os.remove(temp_file_path)
             os.remove(fifo_path)
             break
     image_queue.put(None)
