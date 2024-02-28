@@ -5,6 +5,7 @@ import pathlib
 
 from videoio import VideoReader
 from PIL import Image
+import io
 
 from .inference_config import InferenceConfig
 from .copilot import CoPilot
@@ -170,27 +171,21 @@ def get_images(image_queue):
         
 
             data_read = len(frame_data)
-            # temp_file_path = f"temp_frame_{count}.h264"
-            # with open(temp_file_path, 'wb') as temp_file:
-            #     temp_file.write(frame_data[:data_read] if start_point==0 else frame_data[start_point-1:data_read])
             new_frame = frame_data[:data_read] if start_point==0 else frame_data[start_point-1:data_read]
-            # print(new_frame)
             current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             saved_output = f"{images_folder}/image_{count}_{str(current_time)}.jpg"
-            cmd = ['ffmpeg', '-y', '-f', 'h264','-i', '-', '-f', 'image2', '-vcodec', 'mjpeg', '-vframes', '1',
-                        saved_output]
-            # subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            proc = subprocess.Popen(cmd, stdin=subprocess.PIPE, stderr=subprocess.PIPE)
-            proc.communicate(input=new_frame)
-                
-            # os.remove(temp_file_path)
+            cmd = ['ffmpeg', '-y', '-f', 'h264','-i', '-', '-f', 'image2', '-vcodec', 'mjpeg', '-vframes', '1', '-']
+            proc = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            image_data, _ = proc.communicate(input=new_frame)
+            if image_data:
+                image_queue.put(image_data)
 
             start_point = data_read
 
 
             print(f"=============\n Have captured {count} images at {current_time}\n =============")
 
-            image_queue.put(saved_output) 
+            # image_queue.put(saved_output) 
 
             count += 1
         
@@ -212,18 +207,15 @@ def get_images(image_queue):
 def get_lights(copilot, inference_config, image_queue):
     print("consumer thread starting.......")
     while True:
-        file_path = image_queue.get()
-
-        if file_path is not None:
+        image_data = image_queue.get()
+        if image_data is not None:
             print(f"-----------------\n start processing image \n -----------------")
-            if os.path.exists(file_path):
-                file = Image.open(file_path)
-                inference_w, inference_h = inference_config.inference_resolution
-                box = (0, 0, file.size[0], min(file.size[0] * inference_h / inference_w, file.size[1]))
-                file = file.resize(inference_config.inference_resolution, box=box)
-                copilot.process(file)
-            else:
-                print(f"file not found")
+            file = Image.open(io.BytesIO(image_data))
+            inference_w, inference_h = inference_config.inference_resolution
+            box = (0, 0, file.size[0], min(file.size[0] * inference_h / inference_w, file.size[1]))
+            file = file.resize(inference_config.inference_resolution, box=box)
+            copilot.process(file)
+
         else:
             print(f"-----------------\n no more images... \n -----------------")
             break
