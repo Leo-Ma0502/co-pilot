@@ -151,7 +151,11 @@ def get_images(image_queue):
 
 
     mount_point = '/mnt/tmpfs'
-    subprocess.run(['sudo', 'mkdir', mount_point])
+    if not os.path.exists(mount_point):
+        subprocess.run(['sudo', 'mkdir', mount_point])
+    else:
+        pass
+
     # os.makedirs(mount_point, exist_ok=True)
     subprocess.run(['sudo', 'mount', '-t', 'tmpfs', '-o', 'size=500M', 'tmpfs', mount_point], check=True)
     print("memory space mounted")
@@ -172,8 +176,8 @@ def get_images(image_queue):
     data_read = 0
     start_point = 0
 
-    subprocess.run(['sudo', 'rm', '*.h264'])
-    print(f"cleared cache at {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    # subprocess.run(['sudo', 'rm', '*.h264'])
+    # print(f"cleared cache at {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
     while True:
         try:
@@ -197,23 +201,21 @@ def get_images(image_queue):
         
         except ValueError as e:
             print(str(e))
+            
             stop_subprocess(proc_cam) 
             # os.remove(fifo_path)
             break
 
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            stop_subprocess(proc_cam) 
-            # os.remove(fifo_path)
-            subprocess.run(['sudo', 'umount', mount_point], check=True)
-            subprocess.run(['sudo', 'rm -rf', mount_point], check=True)
-            image_queue.put(None)
-            os.close(fifo_fd)
-            break
-    os.close(fifo_fd)
-    subprocess.run(['sudo', 'umount', mount_point], check=True)
-    subprocess.run(['sudo', 'rm -rf', mount_point], check=True)
-    image_queue.put(None)
-    # copilot.stop()
+        finally:
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                stop_subprocess(proc_ffmpeg)
+                stop_subprocess(proc_cam) 
+                # os.remove(fifo_path)
+                subprocess.run(['sudo', 'umount', mount_point], check=True)
+                subprocess.run(['sudo', 'rm -rf', mount_point], check=True)
+                image_queue.put(None)
+                os.close(fifo_fd)
+                break
        
 def get_lights(copilot, inference_config, image_queue):
     print("consumer thread starting.......")
