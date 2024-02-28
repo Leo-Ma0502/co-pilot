@@ -145,11 +145,24 @@ def get_images(image_queue):
         shutil.rmtree(images_folder)
         os.makedirs(images_folder)
 
-    fifo_path = 'video.h264'
+    # fifo_path = 'video.h264'
 
-    recreate_fifo_file(fifo_path)
+    # recreate_fifo_file(fifo_path)
+
+
+    mount_point = '/mnt/tmpfs'
+    subprocess.run(['sudo', 'mkdir', mount_point])
+    # os.makedirs(mount_point, exist_ok=True)
+    subprocess.run(['sudo', 'mount', '-t', 'tmpfs', '-o', 'size=500M', 'tmpfs', mount_point], check=True)
+    print("memory space mounted")
+    fifo_path = os.path.join(mount_point, 'video.h264')
+    try:
+        os.mkfifo(fifo_path)
+    except FileExistsError:
+        pass  
+
     cmd = ['libcamera-vid', '-o', fifo_path, '--inline', '--width', '1920', '--height', '1080', '-t', '0', '--rotation', '180']
-    proc = subprocess.Popen(cmd)
+    proc_cam = subprocess.Popen(cmd)
 
 
     fifo_fd = os.open(fifo_path, os.O_RDONLY | os.O_NONBLOCK)
@@ -164,7 +177,7 @@ def get_images(image_queue):
 
     while True:
         try:
-            os.lseek(fifo_fd, start_point, os.SEEK_SET)
+            # os.lseek(fifo_fd, start_point, os.SEEK_SET)
             print(f"---\n data read: {data_read}; start: {start_point} \n---")
 
             frame_data += os.read(fifo_fd, 1920 * 1080 * 3 * (count+1) - len(frame_data))
@@ -174,8 +187,8 @@ def get_images(image_queue):
             current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             saved_output = f"{images_folder}/image_{count}_{str(current_time)}.jpg"
             cmd = ['ffmpeg', '-y', '-f', 'h264','-i', '-', '-f', 'image2', '-vcodec', 'mjpeg', '-vframes', '1', '-']
-            proc = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            image_data, _ = proc.communicate(input=new_frame)
+            proc_ffmpeg = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            image_data, _ = proc_ffmpeg.communicate(input=new_frame)
             if image_data:
                 image_queue.put(image_data)
                 print(f"=============\n Have captured {count} images at {current_time}\n =============")
@@ -184,14 +197,17 @@ def get_images(image_queue):
         
         except ValueError as e:
             print(str(e))
-            stop_subprocess(proc) 
-            os.remove(fifo_path)
+            stop_subprocess(proc_cam) 
+            # os.remove(fifo_path)
             break
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
-            stop_subprocess(proc) 
-            os.remove(fifo_path)
+            stop_subprocess(proc_cam) 
+            # os.remove(fifo_path)
             break
+    os.close(fifo_fd)
+    subprocess.run(['sudo', 'umount', mount_point], check=True)
+    subprocess.run(['sudo', 'rm -rf', mount_point], check=True)
     image_queue.put(None)
     # copilot.stop()
        
