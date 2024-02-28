@@ -145,18 +145,12 @@ def get_images(image_queue):
         shutil.rmtree(images_folder)
         os.makedirs(images_folder)
 
-    # fifo_path = 'video.h264'
-
-    # recreate_fifo_file(fifo_path)
-
-
     mount_point = '/mnt/tmpfs'
     if not os.path.exists(mount_point):
         subprocess.run(['sudo', 'mkdir', mount_point])
     else:
         pass
 
-    # os.makedirs(mount_point, exist_ok=True)
     subprocess.run(['sudo', 'mount', '-t', 'tmpfs', '-o', 'size=500M', 'tmpfs', mount_point], check=True)
     print("memory space mounted")
     fifo_path = os.path.join(mount_point, 'video.h264')
@@ -176,12 +170,8 @@ def get_images(image_queue):
     data_read = 0
     start_point = 0
 
-    # subprocess.run(['sudo', 'rm', '*.h264'])
-    # print(f"cleared cache at {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-
     while True:
         try:
-            # os.lseek(fifo_fd, start_point, os.SEEK_SET)
             print(f"---\n data read: {data_read}; start: {start_point} \n---")
 
             frame_data += os.read(fifo_fd, 1920 * 1080 * 3 * (count+1) - len(frame_data))
@@ -203,14 +193,12 @@ def get_images(image_queue):
             print(str(e))
             
             stop_subprocess(proc_cam) 
-            # os.remove(fifo_path)
             break
 
         finally:
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 stop_subprocess(proc_ffmpeg)
                 stop_subprocess(proc_cam) 
-                # os.remove(fifo_path)
                 subprocess.run(['sudo', 'umount', mount_point], check=True)
                 subprocess.run(['sudo', 'rm -rf', mount_point], check=True)
                 image_queue.put(None)
