@@ -169,7 +169,6 @@ def get_images(image_queue):
 
             frame_data += os.read(fifo_fd, 1920 * 1080 * 3 * (count+1) - len(frame_data))
         
-
             data_read = len(frame_data)
             new_frame = frame_data[:data_read] if start_point==0 else frame_data[start_point-1:data_read]
             current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -179,26 +178,18 @@ def get_images(image_queue):
             image_data, _ = proc.communicate(input=new_frame)
             if image_data:
                 image_queue.put(image_data)
-
-            start_point = data_read
-
-
-            print(f"=============\n Have captured {count} images at {current_time}\n =============")
-
-            # image_queue.put(saved_output) 
-
-            count += 1
+                print(f"=============\n Have captured {count} images at {current_time}\n =============")
+                count += 1
+                start_point = data_read
         
         except ValueError as e:
             print(str(e))
             stop_subprocess(proc) 
-            # os.remove(temp_file_path)
             os.remove(fifo_path)
             break
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             stop_subprocess(proc) 
-            # os.remove(temp_file_path)
             os.remove(fifo_path)
             break
     image_queue.put(None)
