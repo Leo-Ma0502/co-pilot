@@ -170,20 +170,21 @@ def get_images(image_queue):
         
 
             data_read = len(frame_data)
-            temp_file_path = f"temp_frame_{count}.h264"
-            with open(temp_file_path, 'wb') as temp_file:
-                temp_file.write(frame_data[:data_read] if start_point==0 else frame_data[start_point-1:data_read])
-
+            # temp_file_path = f"temp_frame_{count}.h264"
+            # with open(temp_file_path, 'wb') as temp_file:
+            #     temp_file.write(frame_data[:data_read] if start_point==0 else frame_data[start_point-1:data_read])
+            new_frame = frame_data[:data_read] if start_point==0 else frame_data[start_point-1:data_read]
+            # print(new_frame)
             current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             saved_output = f"{images_folder}/image_{count}_{str(current_time)}.jpg"
-            cmd = ['ffmpeg', '-y', '-i', temp_file_path, '-f', 'image2', '-vcodec', 'mjpeg', '-vframes', '1',
+            cmd = ['ffmpeg', '-y', '-f', 'h264','-i', '-', '-f', 'image2', '-vcodec', 'mjpeg', '-vframes', '1',
                         saved_output]
-            subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            # subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            proc = subprocess.Popen(cmd, stdin=subprocess.PIPE, stderr=subprocess.PIPE)
+            proc.communicate(input=new_frame)
                 
+            # os.remove(temp_file_path)
 
-            os.remove(temp_file_path)
-
-        
             start_point = data_read
 
 
